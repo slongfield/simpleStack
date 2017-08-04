@@ -1,4 +1,5 @@
-"""rand_program generates random simpleStack programs, and evaulates them.
+#!/usr/bin/python3
+"""randProgram generates random simpleStack programs, and evaluates them.
 
 This is basically a really simple fuzzer for testing that no programs "go
 wrong", where "go wrong" means "throw an exception".
@@ -8,7 +9,7 @@ Allows one exception to be thrown:
     tend to be randomly generated fork-bombs, which while technically valid,
     aren't interesting, and don't violate the spirit of simpleStack.
 
-Assumess that a 100 line program will reach its final state in 10,000 steps,
+Assumes that a 100 line program will reach its final state in 10,000 steps,
 which is a completely invalid assumption.
 """
 
@@ -18,7 +19,8 @@ import simpleStack
 
 _DEBUG = False
 
-_SYMBOLS = ["PRINT", "DUP", "INV", "--", "++", "SUB", "MOD", "SWP", "JNZ"]
+_SYMBOLS = ["PRINT", "DUP", "INV", "--", "++", "SUB", "MUL", "MOD", "SWP", "JNZ",
+            "GET", "PUT"]
 
 
 def gen_program(min_size, max_size):
@@ -36,7 +38,7 @@ def gen_program(min_size, max_size):
     return prog
 
 if __name__ == "__main__":
-    # Generate 1000 programs, or 1 in debug mode
+    # Generate 10000 programs, or 1 in debug mode
     mem_errors = 0
     num_runs = 1 if _DEBUG else 10000
     for _ in range(num_runs):

@@ -1,16 +1,21 @@
-"""simpleStack.py implements a very simple stack-based language.
+#!/usr/bin/python3
+"""simpleStack.py implements a very simple Turing-complete stack-based language.
 
 This language has no invalid programs.
 
-I'm not sure if it's Turing-complete, but it can implement all important
-programs: Hello World, 99 Bottles of Beer, and FizzBuzz.
+It has no parse errors, type errors, or runtime errors, apart from stack
+overflow, which can be removed modulo infinite memory.
 """
 
 import sys
 
 _DEBUG = False
 
-# For execution sake, die if the stack gets too large.
+# For sanity's sake, die if the stack gets too large. If you remove this, the
+# language is truly universal, but it's easy to randomly generate programs
+# (e.g., a series of DUPs after a push) that just blow up the memory usage for
+# nothing useful, so filtering these cases out for the sake of easy creation of
+# randomized programs.
 _MAX_STACK = 10000
 
 
@@ -26,7 +31,7 @@ class Stack(object):
 
     def push(self, elem):
         """Push pushes onto the stack."""
-        if len(self.stack) > _MAX_STACK:
+        if _MAX_STACK and len(self.stack) > _MAX_STACK:
             raise MemoryError("Stack overflow!")
         self.stack.append(elem)
 
@@ -37,7 +42,7 @@ class Stack(object):
 
     def dup(self):
         """Appends a copy of the stack to itself"""
-        if len(self.stack) > _MAX_STACK:
+        if _MAX_STACK and len(self.stack) > _MAX_STACK:
             raise MemoryError("Stack overflow!")
         self.stack.extend(self.stack)
 
@@ -83,6 +88,26 @@ def sub(val1, val2):
     return coerce_to_int(val1) - coerce_to_int(val2)
 
 
+def mul(val1, val2):
+    """Returns val1 * val2."""
+    return coerce_to_int(val1) * coerce_to_int(val2)
+
+
+def pretty_heap(heap, start):
+    if heap:
+        end = max(heap.keys()) + 1
+    else:
+        end = start
+    if heap:
+        if min(heap.keys()) < start:
+            start = min(heap.keys())
+    for i in range(start, end):
+        if i in heap:
+            print(heap[i], end="")
+        else:
+            print(" ", end="")
+
+
 def run_simple_stack(lines, max_steps=None, printFun=print):
     """run_simple_stack runs a simple stack program.
 
@@ -92,12 +117,15 @@ def run_simple_stack(lines, max_steps=None, printFun=print):
     stack = Stack()
     i = 0
     step = 0
+    heap = {0: 0}
     while i < len(lines):
         line = lines[i]
         i += 1
         step += 1
         if _DEBUG:
-            print("Executing", line, "with stack", stack.stack, "at step", step)
+            print(step, "Executing", i, ":", line, "with stack",
+                  stack.stack, "at step", step)
+            print("Heap: ", heap)
             input()
         if max_steps and step > max_steps:
             break
@@ -114,6 +142,8 @@ def run_simple_stack(lines, max_steps=None, printFun=print):
             stack.push(invert(stack.pop()))
         elif line == "SUB":
             stack.push(sub(stack.pop(), stack.pop()))
+        elif line == "MUL":
+            stack.push(mul(stack.pop(), stack.pop()))
         elif line == "MOD":
             stack.push(modulo(stack.pop(), stack.pop()))
         elif line == "DUP":
@@ -124,12 +154,25 @@ def run_simple_stack(lines, max_steps=None, printFun=print):
             stack.push(fst)
             stack.push(snd)
         elif line == "JNZ":
-            cond = stack.pop()
+            cond = coerce_to_int(stack.pop())
             dist = coerce_to_int(stack.pop())
             if cond:
                 i += dist
             if i < 0:
                 i = 0
+        elif line == "PUT":
+            addr = stack.pop()
+            val = stack.pop()
+            heap[coerce_to_int(addr)] = val
+        elif line == "GET":
+            addr = coerce_to_int(stack.pop())
+            if addr in heap:
+                stack.push(heap[addr])
+            else:
+                stack.push(None)
+        elif line == "HEAP":
+            pretty_heap(heap, -10)
+            input()
         else:
             stack.push(line)
 
