@@ -18,7 +18,7 @@ something (somewhat) useful, there are a few programs under the `examples`
 directory:
 
 *  `hello.ss`: Prints "Hello World!"
-*  `99bottle.ss`: Prints the "99 Bottles of Beer on the Wall" song
+*  `99bottles.ss`: Prints the "99 Bottles of Beer on the Wall" song
 *  `fizzbuzz.ss`: Prints out Fizz if the number is divisible by 3, Buzz if its
    divisible by 5, and FizzBuzz if its divisible by 3 and 5.
 *  `turing.ss`: Wolfram's (2,3) [Turing
@@ -92,7 +92,7 @@ who cares.
   * Integers and None are coerced to strings in the obvious way.
   * None is coerced to an integer as "0"
   * Strings:
-     * Strings of digits are interpreted as those digits (e.g., `"-1"` is `-1`)
+     * Strings of digits are interpreted as those digits (e.g., `"10"` is `10`)
      * Empty string, or strings with no digits is treated as `0`
      * strings that contain characters have those characters stripped out before
       being interpreted by the above rules. for example, `2wenty thr3e` has all
