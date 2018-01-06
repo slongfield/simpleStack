@@ -1,4 +1,5 @@
 # simpleStack
+[![Build Status](https://travis-ci.org/slongfield/simpleStack.svg?branch=master)](https://travis-ci.org/slongfield/simpleStack)
 
 simpleStack is a very simple Turing-complete stack-based programming language
 written in Python.
